@@ -5,38 +5,42 @@
 #include <cstdio>
 #include "database.h"
 
-using namespace std;
 
 Database data;
 Array ar;
 
 int main() {
-    
-    int count = 0;
-    
+
+    init(data);
     while (true) {
-        string s;
+        std::string s;
 
-        cout << "command (list, add, get, del, exit): ";
-        cin >> s;
+        std::string key, b;
+        Type t;
 
-        if (s == "list") {
+        std::cout << "command (list, add, get, del, exit): ";
+        std::cin >> s;
 
-        }
-        else if (s == "add") {
-            
-        }
+        
+        if (s == "list") list(data);
+        
+        else if (s == "add") add(data, nullptr);
+        
         else if (s == "get") {
-            
+
         }
         else if (s == "del") {
-            
+
         }
         else if (s == "exit") {
+            destroy(data);
             exit(0);
         }
         else {
 
         }
+
+        std::cout << '\n';
+
     }
 }
