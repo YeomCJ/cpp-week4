@@ -1,6 +1,6 @@
-%.o: %.cpp
-	g++ -Werror -c $< -o $@
+%.o: %.cpp 
+	g++ -Werror -std=c++11 -c $< -o $@
 
-main.exe: *.o
-	g++ *.o -o main.exe
+main.exe: main.o database.o
+	g++ $^ -o $@
 

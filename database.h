@@ -23,6 +23,7 @@ struct Database {
 	int count;
 	Entry* entry;
 	Array* array;
+	int arraycount;
 
 };
 

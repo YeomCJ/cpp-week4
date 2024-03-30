@@ -15,22 +15,26 @@ int main() {
     while (true) {
         std::string s;
 
-        std::string key, b;
-        Type t;
+        std::string key;
 
         std::cout << "command (list, add, get, del, exit): ";
         std::cin >> s;
 
-        
+
         if (s == "list") list(data);
-        
+
         else if (s == "add") add(data, nullptr);
-        
+
         else if (s == "get") {
-
+            std::cout << "key: ";
+            std::cin >> key;
+            get(data, key);
         }
-        else if (s == "del") {
 
+        else if (s == "del") {
+            std::cout << "key: ";
+            std::cin >> key;
+            remove(data, key);
         }
         else if (s == "exit") {
             destroy(data);
