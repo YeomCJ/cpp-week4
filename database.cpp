@@ -7,6 +7,10 @@
 
 using namespace std;
 
+std::string forcestring = "[";
+int forcount = 0;
+
+
 // 엔트리를 생성한다.
 Entry* create(Type type, std::string key, void* value)
 {
@@ -40,52 +44,9 @@ void list(Database& database)
 
         else
         {
-            Array* currentarray = (Array*)database.entry[i].value;
-
-            std::cout << database.entry[i].key << ": ";
-            if (currentarray->type == Type::INT) {
-                int* items = (int*)currentarray->items;
-
-                std::cout << "[";
-                for (int j = 0; j < currentarray->size; j++)
-                {
-                    std::cout << items[j];
-                    if (j != currentarray->size - 1)
-                        std::cout << ", ";
-                }
-                std::cout << "]";
-            }
-
-            else if (currentarray->type == Type::DOUBLE)
-            {
-                double* items = (double*)currentarray->items;
-
-                std::cout << "[";
-                for (int j = 0; j < currentarray->size; j++)
-                {
-                    std::cout << items[j];
-                    if (j != currentarray->size - 1)
-                        std::cout << ", ";
-                }
-                std::cout << "]";
-            }
-            else if (currentarray->type == Type::STRING)
-            {
-                std::string* items = (std::string*)currentarray->items;
-
-                std::cout << "[";
-                for (int j = 0; j < currentarray->size; j++)
-                {
-                    std::cout << items[j];
-                    if (j != currentarray->size - 1)
-                        std::cout << ", ";
-                }
-                std::cout << "]";
-            }
-
+            std::cout << database.entry[i].key << ": " << *((std::string*)database.entry[i].value);
             std::cout << '\n';
         }
-
     }
 }
 
@@ -96,7 +57,6 @@ void init(Database& database)
     database.entry = nullptr;
     database.array = new Array[1];
     database.arraycount = 0;
-
 }
 
 // 데이터베이스에 엔트리를 추가한다.
@@ -108,11 +68,14 @@ void add(Database& database, Entry* entry)
     Entry* newEntry = new Entry;
     Array* newarray = new Array;
 
-    std::cout << "key: ";
-    std::cin >> key;
-    std::cout << "type (int, double, string, array): ";
-    std::cin >> b;
-    std::cout << "value: ";
+    if (forcount == 0)
+    {
+        std::cout << "key: ";
+        std::cin >> key;
+        std::cout << "type (int, double, string, array): ";
+        std::cin >> b;
+        std::cout << "value: ";
+    }
 
     if (b == "int")
     {
@@ -127,8 +90,6 @@ void add(Database& database, Entry* entry)
         t = Type::DOUBLE;
         double* c = new double;
         std::cin >> *c;
-        std::cout << std::fixed;
-        std::cout.precision(3);
         newEntry = create(t, key, c);
     }
 
@@ -143,75 +104,192 @@ void add(Database& database, Entry* entry)
 
     // ---------------------------- array ------------------------------
 
-    else if (b == "array")
+    else if (b == "array" || forcount > 0)
     {
-        database.arraycount++;
-        t = Type::ARRAY;
-        std::string c;
-        std::cout << "type (int, double, string, array): ";
-        std::cin >> c;
-
-        std::cout << "size: ";
-        std::cin >> newarray->size;
-
-        if (c == "int")
+        if (forcount == 0)
         {
+            database.arraycount++;
+            t = Type::STRING;
+            std::string c;
+            std::cout << "type (int, double, string, array): ";
+            std::cin >> c;
 
-            newarray->type = Type::INT;
-            database.array->type = Type::INT;
-            int* c = new int[newarray->size];
-            for (int i = 0; i < newarray->size; i++)
+            std::cout << "size: ";
+            std::cin >> newarray->size;
+
+            if (c == "int")
             {
-                std::cout << "item[" << i << "]: ";
-                std::cin >> c[i];
-            }
-            newarray->items = c;
+                newarray->type = Type::INT;
+                std::string* c = new std::string;
 
+                std::string s = "[";
+                std::string d;
+                for (int i = 0; i < newarray->size; i++)
+                {
+                    std::cout << "item[" << i << "]: ";
+                    std::cin >> d;
+                    s += d;
+                    if (i < newarray->size - 1)
+                        s += ", ";
+                }
+                s += "]";
+                *c = s;
+
+                newarray->items = c;
+            }
+
+            else if (c == "double")
+            {
+                newarray->type = Type::DOUBLE;
+                double* c = new double[newarray->size];
+                std::string* s = new std::string;
+                std::string d = "[";
+
+                for (int i = 0; i < newarray->size; i++)
+                {
+                    std::cout << "item[" << i << "]: ";
+                    std::cin >> c[i];
+                    d += to_string(c[i]);
+                    if (i < newarray->size - 1)
+                        d += ", ";
+                }
+
+                d += "]";
+                *s = d;
+
+                newarray->items = s;
+            }
+
+            else if (c == "string")
+            {
+                newarray->type = Type::STRING;
+                std::string* c = new std::string[newarray->size];
+                std::string* s = new std::string;
+                std::string d = "[";
+                for (int i = 0; i < newarray->size; i++)
+                {
+                    std::cout << "item[" << i << "]: ";
+                    std::cin.ignore();
+                    std::getline(std::cin, c[i]);
+                    c[i] = "\"" + c[i] + "\"";
+                    d += c[i];
+                    if (i < newarray->size - 1)
+                        d += ", ";
+                }
+                d += "]";
+                *s = d;
+                newarray->items = s;
+            }
+
+            else if (c == "array")
+            {
+                std::string* s = new std::string;
+                forcount++;
+                for (int i = 0; i < newarray->size; i++)
+                {
+                    std::cout << "item[" << i << "]: ";
+                    add(database, nullptr);
+                }
+                forcestring.pop_back();
+                forcestring += "]";
+                *s = forcestring;
+                forcestring = "[";
+                forcount = 0;
+
+                newarray->items = s;
+            }
+
+            //invalid out
+            else
+            {
+                std::cout << "Invalid out\n";
+                return;
+            }
+
+            newEntry = create(t, key, newarray);
         }
 
-        else if (c == "double")
+        //2중배열~
+        else
         {
+            t = Type::ARRAY;
+            std::string c;
+            std::cout << "type (int, double, string, array): ";
+            std::cin >> c;
 
-            newarray->type = Type::DOUBLE;
-            double* c = new double[newarray->size];
-            for (int i = 0; i < newarray->size; i++)
+            std::cout << "size: ";
+            std::cin >> newarray->size;
+
+            if (c != "double")
             {
-                std::cout << "item[" << i << "]: ";
-                std::cin >> c[i];
+                std::string d, dd = "[";
+                for (int i = 0; i < newarray->size; i++)
+                {
+                    std::cout << "item[" << i << "]: ";
+                    std::cin.ignore();
+                    getline(std::cin, d);
+                    dd += d;
+                    if (i < newarray->size - 1)
+                        d += ", ";
+                }
+                dd += "]";
+                forcestring += dd;
+                forcestring += ", ";
+
+
             }
-            std::cout << std::fixed;
-            std::cout.precision(3);
-
-            newarray->items = c;
-
-        }
-
-        else if (c == "string")
-        {
-
-            newarray->type = Type::STRING;
-            std::string* c = new std::string[newarray->size];
-            for (int i = 0; i < newarray->size; i++)
+            else if (c == "double")
             {
-                std::cout << "item[" << i << "]: ";
-                std::cin >> c[i];
-                c[i] = "\"" + c[i] + "\"";
+                double* c = new double[newarray->size];
+                std::string d = "[";
+
+                for (int i = 0; i < newarray->size; i++)
+                {
+                    std::cout << "item[" << i << "]: ";
+                    std::cin >> c[i];
+                    d += to_string(c[i]);
+                    if (i < newarray->size - 1)
+                        d += ", ";
+                }
+
+                d += "]";
+                forcestring += d;
+                forcestring += ", ";
+
             }
-            newarray->items = c;
-        }
+
+            else if (c == "array")
+            {
+                forcount++;
+                for (int i = 0; i < newarray->size; i++)
+                {
+                    std::cout << "item[" << i << "]: ";
+                    add(database, nullptr);
+                }
+                forcestring.pop_back();
+                forcestring += "]";
+            }
+
+            //invalid out
+            else
+            {
+                std::cout << "Invalid out\n";
+                return;
+            }
 
 
-        else {
-            return add(database, nullptr);
         }
-        newEntry = create(t, key, newarray);
+
     }
+
+    //invalid out
     else
     {
-        std::cout << "Invalid out";
+        std::cout << "Invalid out\n";
         return;
     }
     //--------------------------------------------------------------
+
     if (database.entry == nullptr)
     {
         database.entry = new Entry[1];
@@ -236,18 +314,22 @@ void add(Database& database, Entry* entry)
 // 데이터베이스에서 키에 해당하는 엔트리를 찾는다.
 Entry* get(Database& database, std::string& key)
 {
-    for (int i = 0; i < database.count; i++) {
-        if (database.entry[i].key == key) {
+    for (int i = 0; i < database.count; i++)
+    {
+        if (database.entry[i].key == key)
+        {
             if (database.entry[i].type == Type::INT)
                 std::cout << key << ": " << *(int*)database.entry[i].value << "\n";
             else if (database.entry[i].type == Type::DOUBLE)
                 std::cout << key << ": " << *(double*)database.entry[i].value << "\n";
             else if (database.entry[i].type == Type::STRING)
                 std::cout << key << ": " << *(std::string*)database.entry[i].value << "\n";
-            else {
+            else
+            {
                 Array* array = (Array*)database.entry[i].value;
                 std::cout << database.entry[i].key << ": ";
-                if (array->type == Type::INT) {
+                if (array->type == Type::INT)
+                {
                     int* items = (int*)array->items;
 
                     std::cout << "[";
@@ -299,6 +381,31 @@ Entry* get(Database& database, std::string& key)
 // 데이터베이스에서 키에 해당하는 엔트리를 제거한다.
 void remove(Database& database, std::string& key)
 {
+    if (database.count > 0)
+    {
+        Entry* tmp = new Entry[database.count - 1];
+        int j = 0, find = 0;
+        for (int i = 0; i < database.count; i++)
+        {
+            if (database.entry[i].key != key)
+            {
+                if (++find == database.count)
+                {
+                    std::cout << "not found\n";
+                    return;
+                }
+                tmp[j] = database.entry[i];
+                j++;
+            }
+        }
+
+        delete[] database.entry;
+        database.entry = tmp;
+        database.count--;
+    }
+
+    else
+        std::cout << "not found\n";
 }
 
 // 데이터베이스를 해제한다.
