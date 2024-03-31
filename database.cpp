@@ -248,7 +248,7 @@ void add(Database& database, Entry* entry)
                     std::cin >> c[i];
                 }
                 newarray->items = c;
-
+                
             }
 
             else if (c == "double")
@@ -293,10 +293,11 @@ void add(Database& database, Entry* entry)
                     std::cout << "item[" << i << "]: ";
                     add(database, nullptr);
                 }
+                //
                 forcestring.pop_back();
                 forcestring.pop_back();
-                for (int k = 0; k < forcount - 1; k++)
-                    forcestring += "]";
+                
+                forcestring += "]";
                 
                 *s = forcestring;
                 forcestring = "[";
