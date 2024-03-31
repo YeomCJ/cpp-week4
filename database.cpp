@@ -23,27 +23,94 @@ Entry* create(Type type, std::string key, void* value)
 }
 
 // 데이터베이스의 리스트를 출력한다.
-void list(Database& database)
+void list(Database& database, int q)
 {
+    if (q == -1) {
+        for (int i = 0; i < database.count; i++)
+        {
+            if (database.entry[i].type == Type::INT)
+            {
+                std::cout << database.entry[i].key << ": " << *((int*)database.entry[i].value) << '\n';
+            }
+            else if (database.entry[i].type == Type::DOUBLE)
+            {
+                std::cout << database.entry[i].key << ": " << *((double*)database.entry[i].value) << '\n';
+            }
+            else if (database.entry[i].type == Type::STRING)
+            {
+                std::cout << database.entry[i].key << ": " << *(std::string*)database.entry[i].value << '\n';
+            }
+            else if (database.entry[i].type == Type::ARRAY) {
+                Array* currentarray = (Array*)database.entry[i].value;
 
-    for (int i = 0; i < database.count; i++)
-    {
-        if (database.entry[i].type == Type::INT)
-        {
-            std::cout << database.entry[i].key << ": " << *((int*)database.entry[i].value) << '\n';
-        }
-        else if (database.entry[i].type == Type::DOUBLE)
-        {
-            std::cout << database.entry[i].key << ": " << *((double*)database.entry[i].value) << '\n';
-        }
-        else if (database.entry[i].type == Type::STRING)
-        {
-            std::cout << database.entry[i].key << ": " << *(std::string*)database.entry[i].value << '\n';
-        }
-        else if (database.entry[i].type == Type::ARRAY) {
-            Array* currentarray = (Array*)database.entry[i].value;
+                std::cout << database.entry[i].key << ": ";
+                if (currentarray->type == Type::INT) {
+                    int* items = (int*)currentarray->items;
 
-            std::cout << database.entry[i].key << ": ";
+                    std::cout << "[";
+                    for (int j = 0; j < currentarray->size; j++)
+                    {
+                        std::cout << items[j];
+                        if (j != currentarray->size - 1)
+                            std::cout << ", ";
+                    }
+                    std::cout << "]";
+                }
+
+                else if (currentarray->type == Type::DOUBLE)
+                {
+                    double* items = (double*)currentarray->items;
+
+                    std::cout << "[";
+                    for (int j = 0; j < currentarray->size; j++)
+                    {
+                        std::cout << items[j];
+                        if (j != currentarray->size - 1)
+                            std::cout << ", ";
+                    }
+                    std::cout << "]";
+                }
+                else if (currentarray->type == Type::STRING)
+                {
+                    std::string* items = (std::string*)currentarray->items;
+
+                    std::cout << "[";
+                    for (int j = 0; j < currentarray->size; j++)
+                    {
+                        std::cout << items[j];
+                        if (j != currentarray->size - 1)
+                            std::cout << ", ";
+                    }
+                    std::cout << "]";
+                }
+                else {
+                    std::cout << *(std::string*)currentarray->items;
+                }
+
+                std::cout << '\n';
+            }
+
+        }
+    }
+
+    // get 함수 호출용 출력
+    else {  
+        if (database.entry[q].type == Type::INT)
+        {
+            std::cout << database.entry[q].key << ": " << *((int*)database.entry[q].value) << '\n';
+        }
+        else if (database.entry[q].type == Type::DOUBLE)
+        {
+            std::cout << database.entry[q].key << ": " << *((double*)database.entry[q].value) << '\n';
+        }
+        else if (database.entry[q].type == Type::STRING)
+        {
+            std::cout << database.entry[q].key << ": " << *(std::string*)database.entry[q].value << '\n';
+        }
+        else if (database.entry[q].type == Type::ARRAY) {
+            Array* currentarray = (Array*)database.entry[q].value;
+
+            std::cout << database.entry[q].key << ": ";
             if (currentarray->type == Type::INT) {
                 int* items = (int*)currentarray->items;
 
@@ -89,7 +156,6 @@ void list(Database& database)
 
             std::cout << '\n';
         }
-        
     }
 }
 
@@ -115,6 +181,16 @@ void add(Database& database, Entry* entry)
     {
         std::cout << "key: ";
         std::cin >> key;
+
+        for (int i = 0; i < database.count; i++)
+        {
+            if (database.entry[i].key == key)
+            {
+                remove(database, key);
+                break;
+            }
+        }
+
         std::cout << "type (int, double, string, array): ";
         std::cin >> b;
         std::cout << "value: ";
@@ -217,7 +293,7 @@ void add(Database& database, Entry* entry)
                 }
                 forcestring.pop_back();
                 forcestring.pop_back();
-                for (int k = 0; k < forcount + 1; k++)
+                for (int k = 0; k < forcount - 1; k++)
                     forcestring += "]";
                 
                 *s = forcestring;
@@ -319,7 +395,7 @@ void add(Database& database, Entry* entry)
                 }
                 forcestring.pop_back();
                 forcestring.pop_back();
-                forcestring += "]";
+                forcestring += "], ";
             }
 
             //invalid out
@@ -370,59 +446,7 @@ Entry* get(Database& database, std::string& key)
     {
         if (database.entry[i].key == key)
         {
-            if (database.entry[i].type == Type::INT)
-                std::cout << key << ": " << *(int*)database.entry[i].value << "\n";
-            else if (database.entry[i].type == Type::DOUBLE)
-                std::cout << key << ": " << *(double*)database.entry[i].value << "\n";
-            else if (database.entry[i].type == Type::STRING)
-                std::cout << key << ": " << *(std::string*)database.entry[i].value << "\n";
-            else
-            {
-                Array* array = (Array*)database.entry[i].value;
-                std::cout << database.entry[i].key << ": ";
-                if (array->type == Type::INT)
-                {
-                    int* items = (int*)array->items;
-
-                    std::cout << "[";
-                    for (int j = 0; j < array->size; j++)
-                    {
-                        std::cout << items[j];
-                        if (j != array->size - 1)
-                            std::cout << ", ";
-                    }
-                    std::cout << "]";
-                }
-
-                else if (array->type == Type::DOUBLE)
-                {
-                    double* items = (double*)array->items;
-
-                    std::cout << "[";
-                    for (int j = 0; j < array->size; j++)
-                    {
-                        std::cout << items[j];
-                        if (j != array->size - 1)
-                            std::cout << ", ";
-                    }
-                    std::cout << "]";
-                }
-                else if (array->type == Type::STRING)
-                {
-                    std::string* items = (std::string*)array->items;
-
-                    std::cout << "[";
-                    for (int j = 0; j < array->size; j++)
-                    {
-                        std::cout << items[j];
-                        if (j != array->size - 1)
-                            std::cout << ", ";
-                    }
-                    std::cout << "]";
-                }
-            }
-
-            std::cout << '\n';
+            list(database, i);
             return 0;
         }
     }
