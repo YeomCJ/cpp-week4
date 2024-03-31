@@ -191,7 +191,9 @@ void add(Database& database, Entry* entry)
                     add(database, nullptr);
                 }
                 forcestring.pop_back();
+                forcestring.pop_back();
                 forcestring += "]";
+                
                 *s = forcestring;
                 forcestring = "[";
                 forcount = 0;
@@ -222,18 +224,20 @@ void add(Database& database, Entry* entry)
 
             if (c != "double")
             {
-                std::string d, dd = "[";
+                std::string* c = new std::string[newarray->size];
+                std::string* s = new std::string;
+                std::string d = "[";
                 for (int i = 0; i < newarray->size; i++)
                 {
                     std::cout << "item[" << i << "]: ";
                     std::cin.ignore();
-                    getline(std::cin, d);
-                    dd += d;
+                    std::getline(std::cin, c[i]);
+                    d += c[i];
                     if (i < newarray->size - 1)
                         d += ", ";
                 }
-                dd += "]";
-                forcestring += dd;
+                d += "]";
+                forcestring += d;
                 forcestring += ", ";
 
 
@@ -277,7 +281,7 @@ void add(Database& database, Entry* entry)
                 return;
             }
 
-
+            return;
         }
 
     }

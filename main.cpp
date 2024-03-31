@@ -41,7 +41,7 @@ int main() {
             exit(0);
         }
         else {
-
+            std::cout << "Invalid out";
         }
 
         std::cout << '\n';
