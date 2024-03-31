@@ -30,7 +30,7 @@ struct Database {
 // 엔트리를 생성한다.
 Entry* create(Type type, std::string key, void* value);
 
-void list(Database& Database);
+void list(Database& Database, int q);
 
 // 데이터베이스를 초기화한다.
 void init(Database& database);

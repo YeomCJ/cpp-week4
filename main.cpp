@@ -21,7 +21,7 @@ int main() {
         std::cin >> s;
 
 
-        if (s == "list") list(data);
+        if (s == "list") list(data, -1);
 
         else if (s == "add") add(data, nullptr);
 

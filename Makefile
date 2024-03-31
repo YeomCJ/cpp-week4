@@ -3,4 +3,3 @@
 
 main.exe: main.o database.o
 	g++ $^ -o $@
-

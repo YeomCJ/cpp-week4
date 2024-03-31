@@ -270,10 +270,12 @@ void add(Database& database, Entry* entry)
             {
                 newarray->type = Type::STRING;
                 std::string* c = new std::string[newarray->size];
+                
+                std::cin.ignore();
                 for (int i = 0; i < newarray->size; i++)
                 {
                     std::cout << "item[" << i << "]: ";
-                    std::cin.ignore();
+                    
                     std::getline(std::cin, c[i]);
                     c[i] = "\"" + c[i] + "\"";
                 }
@@ -367,10 +369,11 @@ void add(Database& database, Entry* entry)
                 std::string* ss = new std::string[newarray->size];
                 
                 std::string d = "[";
+                std::cin.ignore();
                 for (int i = 0; i < newarray->size; i++)
                 {
                     std::cout << "item[" << i << "]: ";
-                    std::cin.ignore();
+                    
                     std::getline(std::cin, ss[i]);
                     ss[i] = "\"" + ss[i] + "\"";
                     d += ss[i];
