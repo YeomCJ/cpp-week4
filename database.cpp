@@ -440,6 +440,9 @@ void add(Database& database, Entry* entry)
         database.entry = tmp;
     }
 
+    delete newEntry;
+    delete newarray;
+
     database.count++;
 }
 
