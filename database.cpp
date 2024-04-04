@@ -440,6 +440,10 @@ void add(Database& database, Entry* entry)
         database.entry = tmp;
     }
 
+    delete newEntry;
+    delete[] newarray->items;
+    delete newarray;
+
     database.count++;
 }
 
@@ -492,4 +496,5 @@ void remove(Database& database, std::string& key)
 void destroy(Database& database)
 {
     delete[] database.entry;
+    delete[] database.array;
 }
